@@ -97,9 +97,19 @@ def rF(filename):
         mydata = json.load(f)
     return mydata
 
-searchTwitter('clinton',2,25,'testA.json')
+searchTwitter('clinton',10,25,'testA.json')
 myD = rF('testA.json')
 print len(myD)
+
+def makeLabeled(filename, startInd, endInd):
+    dat = rF(filename)    
+    for entry in dat[startInd:endInd]:
+        print entry['tweet-all']
+        trueFalse = raw_input("1 = fake news, 0 = true news, 5 = other/opinion ")
+        ## 1 = FN, 0 = TN, 5 = other
+        entry['FN'] = trueFalse
+        print entry['FN']    
+    makeF('labeled' + filename, dat)
 
 #==============================================================================
 # get tweet info from particular url
