@@ -38,7 +38,7 @@ def searchTwitter(query, num_pages, totLoops, filename):
                 dictList.append(makeTweetDict(browser, tweet))
                 tweet_ids[tweet_id] = True
         makeF(filename, dictList)   
-        print count
+        print(count)
         count+=1        
     return 
 
@@ -97,19 +97,31 @@ def rF(filename):
         mydata = json.load(f)
     return mydata
 
-searchTwitter('clinton',10,25,'testA.json')
-myD = rF('testA.json')
-print len(myD)
+
 
 def makeLabeled(filename, startInd, endInd):
     dat = rF(filename)    
     for entry in dat[startInd:endInd]:
-        print entry['tweet-all']
-        trueFalse = raw_input("1 = fake news, 0 = true news, 5 = other/opinion ")
+        print(entry['tweet-all'])
+        trueFalse = input("1 = fake news, 0 = true news, 5 = other/opinion ")
         ## 1 = FN, 0 = TN, 5 = other
         entry['FN'] = trueFalse
-        print entry['FN']    
+        print(entry['FN'])
     makeF('labeled' + filename, dat)
+
+def main():
+    #searchTwitter('clinton',10,25,'testA.json')
+    filename = 'Data/texasChurchShooter.json'
+    myD = rF(filename)
+    print(len(myD))
+    
+    makeLabeled(filename,0,1)
+
+if __name__ == '__main__':
+    main()
+    
+
+
 
 #==============================================================================
 # get tweet info from particular url
