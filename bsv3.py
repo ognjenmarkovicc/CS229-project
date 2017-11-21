@@ -7,10 +7,10 @@ import time
 import json
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-
+import datetime
 
 def searchTwitter(query, num_pages, totLoops, filename):
-    browser = webdriver.Firefox()
+    browser = webdriver.Chrome()
     base_url=u'https://twitter.com/search?f=tweets&vertical=news&q='
 #    base_url = u'https://twitter.com/search?q='
 #query = u'clinton' 
@@ -145,15 +145,27 @@ def makeLabeled(filename,folder, startInd, endInd):
     makeF(folder + 'labeled' + filename, dat[startInd:endInd])
     
 def main():
-    #searchTwitter('clinton',10,25,'testA.json')
     folder = 'Data/'
-    filename = 'realDonaldTrump.json'
-    user = 'realDonaldTrump'
     
-    searchTwitterUser(user,5,500,folder+filename)
+    filename = 'brexit2017_3_30-2017_3_31.json'
+    #user = 'realDonaldTrump'
+    
+    #searchTwitterUser(user,5,500,folder+filename)
+    search_date = datetime.date(2017,1,1)
+    
+    for i in range(30):
+        search_date_po = search_date.replace(day = search_date.day + 1)
+        #query = 'brexit until:2017-03-31 since:2017-03-30'
+        filename = 'brexit'+search_date_po.strftime('%Y_%m_%d')+'-'+search_date.strftime('%Y_%m_%d')
+        query = 'brexit until:'+search_date_po.strftime('%Y-%m-%d')+' since:'+search_date.strftime('%Y-%m-%d')
+        print('Querying:')
+        print(query)
+        print('\n')
+        searchTwitter(query,5,50,folder+filename)
+        search_date = search_date.replace(day = search_date.day + 1)
+
     #makeLabeled(filename, folder, 0, 10)
-    #query = 'california fire OR #californiafire OR north california fire '
-    #searchTwitter(query,5,500,folder+filename)
+
 
 if __name__ == '__main__':
     main()
