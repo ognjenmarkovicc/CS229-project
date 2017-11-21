@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 def searchTwitter(query, num_pages, totLoops, filename):
-    browser = webdriver.Chrome()
+    browser = webdriver.Firefox()
     base_url=u'https://twitter.com/search?f=tweets&vertical=news&q='
 #    base_url = u'https://twitter.com/search?q='
 #query = u'clinton' 
@@ -41,6 +41,40 @@ def searchTwitter(query, num_pages, totLoops, filename):
         print(count)
         count+=1        
     return 
+
+def searchTwitterUser(user, num_pages, totLoops, filename):
+    browser = webdriver.Firefox()
+    base_url=u'https://twitter.com/'
+#    base_url = u'https://twitter.com/search?q='
+#query = u'clinton' 
+    url = base_url + user
+    
+    browser.get(url)
+    time.sleep(1)
+    
+    body = browser.find_element_by_tag_name('body')
+    
+    count = 0
+    tweet_ids = {}
+    while count < totLoops:
+        for _ in range(num_pages):#count*num_pages, (count+1)*num_pages): ##
+            body.send_keys(Keys.PAGE_DOWN)
+            time.sleep(1)
+        
+        tweets = browser.find_elements_by_class_name('tweet')
+        dictList = []
+        for tweet in tweets:
+            tweet_id = tweet.get_attribute('data-tweet-id')
+            if tweet_id in tweet_ids:
+                continue
+            else:
+                dictList.append(makeTweetDict(browser, tweet))
+                tweet_ids[tweet_id] = True
+        makeF(filename, dictList)   
+        print(count)
+        count+=1        
+    return 
+
 
 def makeTweetDict(browser, tweet):
     tweetDict = {}
@@ -74,6 +108,7 @@ def makeTweetDict(browser, tweet):
     tweetDict['replies'] = replies
     tweetDict['retweets'] = retweets
     tweetDict['likes'] = likes
+    tweetDict['data-mentions'] = tweet.get_attribute('data-mentions')
     
     return tweetDict
     
@@ -99,23 +134,26 @@ def rF(filename):
 
 
 
-def makeLabeled(filename, startInd, endInd):
-    dat = rF(filename)    
+def makeLabeled(filename,folder, startInd, endInd):
+    dat = rF(folder+filename)    
     for entry in dat[startInd:endInd]:
         print(entry['tweet-all'])
         trueFalse = input("1 = fake news, 0 = true news, 5 = other/opinion ")
         ## 1 = FN, 0 = TN, 5 = other
         entry['FN'] = trueFalse
         print(entry['FN'])
-    makeF('labeled' + filename, dat)
-
+    makeF(folder + 'labeled' + filename, dat[startInd:endInd])
+    
 def main():
     #searchTwitter('clinton',10,25,'testA.json')
-    filename = 'Data/texasChurchShooter.json'
-    myD = rF(filename)
-    print(len(myD))
+    folder = 'Data/'
+    filename = 'realDonaldTrump.json'
+    user = 'realDonaldTrump'
     
-    makeLabeled(filename,0,1)
+    searchTwitterUser(user,5,500,folder+filename)
+    #makeLabeled(filename, folder, 0, 10)
+    #query = 'california fire OR #californiafire OR north california fire '
+    #searchTwitter(query,5,500,folder+filename)
 
 if __name__ == '__main__':
     main()
