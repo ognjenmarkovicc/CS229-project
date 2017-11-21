@@ -7,7 +7,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-browser = webdriver.Chrome()
+browser = webdriver.Firefox()
 base_url = u'https://twitter.com/search?q='
 query = u'clinton'
 url = base_url + query
@@ -25,7 +25,7 @@ tweetsOther = browser.find_elements_by_class_name('content')
 #tweets = browser.find_elements_by_class_name('tweet-text')
 
 for tweet in tweetsOther:
-    print tweet.text
+    print(tweet.text)
 
 #==============================================================================
 # get tweet info from particular url
